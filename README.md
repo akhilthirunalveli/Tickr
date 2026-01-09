@@ -9,56 +9,59 @@ Tickr is a CLI-first time-tracking tool designed for freelancers, consultants, a
 - ⏱️ **Precise Time Tracking**: Start and stop work sessions per project.
 - 🧱 **Immutable Data**: Work sessions are stored securely in a local SQLite database (`~/.tickr/tickr.db`).
 - 📊 **Interactive Reporting**: Generate reports filtered by date and project.
+- 🖥️ **Terminal Dashboard**: Visual dashboard with real-time stats (`tickr dash`).
+- 🍅 **Pomodoro Timer**: Built-in 25-minute focus timer (`tickr pomo`).
+- 🧾 **PDF Invoicing**: Generate professional PDF invoices and summaries.
 - 🧠 **Smart Logic**: Automatically handles overlapping sessions and ensures data integrity.
 
 ## Installation
-
-### Prerequisites
-- Node.js (v14 or higher)
-
-### From Source
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/akhilthirunalveli/Tickr.git
-   cd Tickr
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Link the CLI globally (optional):
-   ```bash
-   npm link
-   ```
-   Now you can use `tickr` anywhere in your terminal.
-
-## Usage
-
-### Start Tracking
-Start a timer for a specific project. If another session is active, it will be stopped automatically.
 ```bash
-tickr start <project_name>
-# Example
-tickr start client-website
+npm install -g tickr-cli
 ```
 
-### Stop Tracking
-Stop the current active session.
+### 🚀 Core Commands
+
+#### Start & Stop
+Start tracking time for a project. If another session is active, it stops automatically.
 ```bash
-tickr stop
+tickr start <project>   # Start tracking
+tickr stop              # Stop tracking
+tickr status            # Check current session
 ```
 
-### Reporting
-Generate a summary of time spent.
+#### Dashboard
+Launch the interactive terminal dashboard to view history and stats.
 ```bash
-# Total time for all projects this month
-tickr report
+tickr dash
+```
 
-# Specific project
-tickr report client-website
+### ⏱️ Productivity
 
-# Custom date range
-tickr report --since 2024-02-01 --until 2024-02-15
+#### Pomodoro Timer
+Start a 25-minute focus session.
+```bash
+tickr pomo <project>
+```
+
+### 📊 Reporting & Invoices
+
+#### CLI Report
+Generate a text-based summary of time spent.
+```bash
+tickr report [project]                   # specific project
+tickr report --since 2024-01-01          # custom date range
+```
+
+#### PDF Summary
+Generate a detailed PDF project summary.
+```bash
+tickr summary <project>
+```
+
+#### PDF Invoice
+Generate a billable PDF invoice.
+```bash
+tickr invoice <project> --rate 100       # $100/hr rate
 ```
 
 ## Data Storage
