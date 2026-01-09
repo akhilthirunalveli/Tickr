@@ -1,11 +1,11 @@
 {
-  "name": "tickr",
+  "name": "tickr-cli",
   "version": "1.0.0",
   "description": "A CLI-first time-tracking tool",
   "main": "bin/index.js",
   "type": "module",
   "bin": {
-    "tickr": "./bin/index.js"
+    "tickr": "bin/index.js"
   },
   "keywords": [
     "cli",
