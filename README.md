@@ -1,12 +1,17 @@
+<p align="center">
+  <img src="public/ad.png" alt="Tickr App"/>
+</p>
+
 # Tickr
 
 **Time that adds up.**
 
-Tickr is a CLI-first time-tracking tool designed for freelancers, consultants, and engineers who need accurate, auditable work logs without relying on bloated GUIs.
+Tickr is a CLI-first time-tracking tool designed for freelancers, consultants, and engineers who need accurate, auditable work logs without relying on bloated GUIs. It bridges the gap between your effort and client trust with verifiable time reports.
 
 ## Features
 
 - ⏱️ **Precise Time Tracking**: Start and stop work sessions per project.
+- 🤝 **Build Trust**: Produce detailed, transparent logs that give clients confidence in your billed hours.
 - 🧱 **Immutable Data**: Work sessions are stored securely in a local SQLite database (`~/.tickr/tickr.db`).
 - 📊 **Interactive Reporting**: Generate reports filtered by date and project.
 - 🖥️ **Terminal Dashboard**: Visual dashboard with real-time stats (`tickr dash`).
@@ -14,12 +19,16 @@ Tickr is a CLI-first time-tracking tool designed for freelancers, consultants, a
 - 🧾 **PDF Invoicing**: Generate professional PDF invoices and summaries.
 - 🧠 **Smart Logic**: Automatically handles overlapping sessions and ensures data integrity.
 
+<p align="left">
+  <img src="public/idea.png" alt="Tickr Idea"/>
+</p>
+
 ## Installation
 ```bash
 npm install -g tickr-cli
 ```
 
-### 🚀 Core Commands
+### Core Commands
 
 #### Start & Stop
 Start tracking time for a project. If another session is active, it stops automatically.
@@ -35,7 +44,7 @@ Launch the interactive terminal dashboard to view history and stats.
 tickr dash
 ```
 
-### ⏱️ Productivity
+### Productivity
 
 #### Pomodoro Timer
 Start a 25-minute focus session.
@@ -43,7 +52,7 @@ Start a 25-minute focus session.
 tickr pomo <project>
 ```
 
-### 📊 Reporting & Invoices
+### Reporting & Invoices
 
 #### CLI Report
 Generate a text-based summary of time spent.

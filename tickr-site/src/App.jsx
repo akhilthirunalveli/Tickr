@@ -121,7 +121,7 @@ const CTASection = ({ copyToClipboard }) => {
                   initial={{ scale: 0, rotate: -45 }}
                   animate={{ scale: 1, rotate: 0 }}
                   exit={{ scale: 0 }}
-                  style={{ color: '#27c93f' }}
+                  style={{ color: '#00be1dff' }}
                 >
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </motion.svg>
@@ -158,6 +158,121 @@ const FeatureCard = ({ title, desc, delay }) => (
     <p className="feature-desc">{desc}</p>
   </motion.div>
 );
+
+const MissionSection = () => (
+  <section className="section bg-forest text-cream">
+    <div className="container">
+      <FadeInSection>
+        <div className="mission-grid">
+          <div className="mission-content">
+            <h2 className="section-title light text-left">The Freelancer's Dilemma</h2>
+            <p className="mission-text">
+              As freelancers, sometimes understanding what you’re working on, or understanding how much time you’ve spent on a particular project once it’s time to get paid, can be a challenge.
+            </p>
+            <div className="mission-highlight">
+              <span className="quote-mark">“</span>
+              <p>Tickr solves that pain.</p>
+              <span className="quote-mark">”</span>
+            </div>
+            <p className="mission-text">
+              With this command line interface tool, you simply specify that you’re starting to work on a project, and once you’re done, you say that you’ve stopped.
+            </p>
+            <p className="mission-text">
+              On top of that, an <strong>interactive reporting mode</strong> tells you exactly the amount of time spent so far on a particular project (filtered by date and time), so you can know <span className="underline-highlight">exactly how much to charge each client.</span>
+            </p>
+          </div>
+          <div className="mission-visual">
+            <div className="visual-stage">
+              {/* Top: Chaos */}
+              <div className="chaos-zone">
+                <div className="particle p1"></div>
+                <div className="particle p2"></div>
+                <div className="particle p3"></div>
+                <div className="particle p4"></div>
+              </div>
+
+              {/* Middle: The Tool */}
+              <div className="cli-filter">
+                <span className="cli-prompt">&gt;</span> tickr report
+              </div>
+
+              {/* Bottom: Order */}
+              <div className="order-zone">
+                <div className="sorted-item s1">
+                  <span className="dot text-forest-light"></span>
+                  <span className="line"></span>
+                </div>
+                <div className="sorted-item s2">
+                  <span className="dot text-forest-light"></span>
+                  <span className="line"></span>
+                </div>
+                <div className="sorted-item s3">
+                  <span className="dot text-forest-light"></span>
+                  <span className="line"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </FadeInSection>
+    </div>
+  </section>
+);
+
+const FeaturesSection = () => (
+  <section className="section bg-cream tight-top">
+    <div className="container">
+      <FadeInSection>
+        <h2 className="section-title">Features</h2>
+        <div className="features">
+          <FeatureCard
+            title="CLI-First Workflow"
+            desc="Stay in your flow state. Track time, switch contexts, and check status without ever leaving your terminal."
+            delay={0.2}
+          />
+          <FeatureCard
+            title="Instant Invoicing"
+            desc="Generate professional PDF invoices with a single command. Support for USD ($) and INR (Rs.) currencies out of the box."
+            delay={0.4}
+          />
+          <FeatureCard
+            title="Project Summaries"
+            desc="Visualize your productivity with detailed project summaries and monthly breakdowns."
+            delay={0.6}
+          />
+        </div>
+      </FadeInSection>
+    </div>
+  </section>
+);
+
+const CodeBlock = ({ code }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="code-block-wrapper">
+      <pre><code>{code}</code></pre>
+      <button className="code-copy-btn" onClick={handleCopy} title="Copy code">
+        {copied ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#27c93f' }}>
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        )}
+      </button>
+    </div>
+  );
+};
 
 const Docs = () => {
   const [activeId, setActiveId] = useState('install');
@@ -208,7 +323,7 @@ const Docs = () => {
             <section id="install">
               <h3>Installation</h3>
               <p>Tickr is a Node.js CLI tool. You can install it globally from npm.</p>
-              <pre><code>npm install -g tickr-cli</code></pre>
+              <CodeBlock code="npm install -g tickr-cli" />
               <p><strong>Prerequisites:</strong> Node.js v14 or higher.</p>
             </section>
 
@@ -242,7 +357,7 @@ const Docs = () => {
             <section id="pomo">
               <h3>Pomodoro Mode</h3>
               <p>Tickr includes a built-in focus timer to help you stay productive.</p>
-              <pre><code>tickr pomo MyProject</code></pre>
+              <CodeBlock code="tickr pomo MyProject" />
               <ul className="step-list">
                 <li>Starts a 25-minute timer for the project.</li>
                 <li>Automatically logs time to the project in the database.</li>
@@ -268,7 +383,7 @@ const Docs = () => {
 
               <h4>Invoice Generation</h4>
               <p>Supports interactive currency selection (USD/INR) for international freelancers.</p>
-              <pre><code>tickr invoice MyProject --rate 50 --since 2024-01-01</code></pre>
+              <CodeBlock code="tickr invoice MyProject --rate 50 --since 2024-01-01" />
 
               <table className="docs-table">
                 <thead><tr><th>Flag</th><th>Purpose</th></tr></thead>
@@ -283,7 +398,7 @@ const Docs = () => {
             <section id="config">
               <h3>Configuration</h3>
               <p>Customize Tickr's behavior using environment variables.</p>
-              <pre><code>export TICKR_DB_PATH="/path/to/custom/db.sqlite"</code></pre>
+              <CodeBlock code='export TICKR_DB_PATH="/path/to/custom/db.sqlite"' />
               <p>Set this variable in your <code>.bashrc</code> or <code>.zshrc</code> to change the default database location. Useful for syncing data via Dropbox or iCloud.</p>
             </section>
           </div>
@@ -337,9 +452,6 @@ const Home = ({ copyToClipboard }) => {
               title="Click to copy"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.4, delay: 0.4 }}
             >
               <span className="cmd">$ npm install -g tickr-cli</span>
               <AnimatePresence mode='wait'>
@@ -435,31 +547,11 @@ const Home = ({ copyToClipboard }) => {
         </div>
       </section>
 
+      {/* SECTION 2: MISSION (Dark Forest Background) */}
+      <MissionSection />
+
       {/* SECTION 3: FEATURES (Cream Background) */}
-      <section className="section bg-cream tight-top">
-        <div className="container">
-          <FadeInSection>
-            <h2 className="section-title">Features</h2>
-            <div className="features">
-              <FeatureCard
-                title="CLI-First Workflow"
-                desc="Stay in your flow state. Track time, switch contexts, and check status without ever leaving your terminal."
-                delay={0.2}
-              />
-              <FeatureCard
-                title="Instant Invoicing"
-                desc="Generate professional PDF invoices with a single command. Support for USD ($) and INR (Rs.) currencies out of the box."
-                delay={0.4}
-              />
-              <FeatureCard
-                title="Project Summaries"
-                desc="Visualize your productivity with detailed project summaries and monthly breakdowns."
-                delay={0.6}
-              />
-            </div>
-          </FadeInSection>
-        </div>
-      </section>
+      <FeaturesSection />
 
       {/* SECTION 4: COMPARISON (Forest Background) */}
       <ComparisonSection />
