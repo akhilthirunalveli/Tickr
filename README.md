@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/ad.png" alt="Tickr App"/>
+  <img src="tickr-site/public/ad.png" alt="Tickr App"/>
 </p>
 
 # Tickr
@@ -19,8 +19,8 @@ Tickr is a CLI-first time-tracking tool designed for freelancers, consultants, a
 - 🧾 **PDF Invoicing**: Generate professional PDF invoices and summaries.
 - 🧠 **Smart Logic**: Automatically handles overlapping sessions and ensures data integrity.
 
-<p align="left">
-  <img src="public/idea.png" alt="Tickr Idea"/>
+<p align="center">
+  <img src="tickr-site/public/idea.png" alt="Tickr Idea"/>
 </p>
 
 ## Installation
