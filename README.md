@@ -8,6 +8,10 @@
 
 Tickr is a CLI-first time-tracking tool designed for freelancers, consultants, and engineers who need accurate, auditable work logs without relying on bloated GUIs. It bridges the gap between your effort and client trust with verifiable time reports.
 
+## Tech Stack
+
+![NodeJS](https://img.shields.io/badge/Node.js-1B3B36?style=for-the-badge&logo=nodedotjs&logoColor=white) ![Commander](https://img.shields.io/badge/Commander.js-2C5F56?style=for-the-badge&logo=cmd&logoColor=white) ![SQLite](https://img.shields.io/badge/SQLite-1B3B36?style=for-the-badge&logo=sqlite&logoColor=white) ![Blessed](https://img.shields.io/badge/Blessed_TUI-2C5F56?style=for-the-badge&logo=gnometerminal&logoColor=white) ![PDFKit](https://img.shields.io/badge/PDFKit-1B3B36?style=for-the-badge&logo=adobeacrobatreader&logoColor=white)
+
 ## Features
 
 - ⏱️ **Precise Time Tracking**: Start and stop work sessions per project.
@@ -76,6 +80,8 @@ tickr invoice <project> --rate 100       # $100/hr rate
 ## Data Storage
 Data is stored in `~/.tickr/tickr.db`.
 You can back up this file to save your history.
+
+
 
 ## Development
 
