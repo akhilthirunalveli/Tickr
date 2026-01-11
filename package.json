@@ -19,6 +19,10 @@
     "type": "git",
     "url": "git+https://github.com/akhilthirunalveli/Tickr.git"
   },
+  "bugs": {
+    "url": "https://github.com/akhilthirunalveli/Tickr/issues"
+  },
+  "homepage": "https://github.com/akhilthirunalveli/Tickr#readme",
   "license": "ISC",
   "dependencies": {
     "better-sqlite3": "^12.5.0",
