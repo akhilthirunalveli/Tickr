@@ -34,6 +34,17 @@ db.exec(`
   
   CREATE INDEX IF NOT EXISTS idx_project ON sessions(project);
   CREATE INDEX IF NOT EXISTS idx_start_time ON sessions(start_time);
+  
+  CREATE TABLE IF NOT EXISTS projects (
+    name TEXT PRIMARY KEY,
+    user_email TEXT,
+    client_email TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS config (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  );
 `);
 
 /**
@@ -109,6 +120,34 @@ export const getSessions = (dateFrom, dateTo, project) => {
   query += ` ORDER BY start_time ASC`;
 
   return db.prepare(query).all(...params);
+};
+
+export const upsertProject = (name, userEmail, clientEmail) => {
+  db.prepare(`
+    INSERT INTO projects (name, user_email, client_email)
+    VALUES (?, ?, ?)
+    ON CONFLICT(name) DO UPDATE SET
+      user_email = excluded.user_email,
+      client_email = excluded.client_email
+  `).run(name, userEmail, clientEmail);
+};
+
+export const getProject = (name) => {
+  return db.prepare('SELECT * FROM projects WHERE name = ?').get(name);
+};
+
+export const setConfig = (key, value) => {
+  db.prepare(`
+    INSERT INTO config (key, value)
+    VALUES (?, ?)
+    ON CONFLICT(key) DO UPDATE SET
+      value = excluded.value
+  `).run(key, value);
+};
+
+export const getConfig = (key) => {
+  const row = db.prepare('SELECT value FROM config WHERE key = ?').get(key);
+  return row ? row.value : null;
 };
 
 export default db;

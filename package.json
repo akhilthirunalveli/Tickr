@@ -1,6 +1,6 @@
 {
   "name": "tickr-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A CLI-first time-tracking tool",
   "main": "bin/index.js",
   "type": "module",
@@ -28,6 +28,7 @@
     "cli-table3": "^0.6.5",
     "commander": "^14.0.2",
     "dayjs": "^1.11.19",
+    "nodemailer": "^7.0.12",
     "pdfkit": "^0.17.2"
   }
 }

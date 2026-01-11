@@ -145,19 +145,109 @@ const CTASection = ({ copyToClipboard }) => {
   );
 };
 
-const FeatureCard = ({ title, desc, delay }) => (
+const FeatureCard = ({ title, desc, symbol, color }) => (
   <motion.div
     className="feature-card"
     initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.6, delay: delay }}
-    whileHover={{ y: -5 }}
   >
-    <h3 className="feature-title">{title}</h3>
+    <div className="card-header">
+      <span className={`feature-symbol ${color}`}>{symbol}</span>
+      <h3 className="feature-title">{title}</h3>
+    </div>
     <p className="feature-desc">{desc}</p>
   </motion.div>
 );
+
+const AlignmentVisual = () => {
+  const [isAligned, setIsAligned] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsAligned((prev) => !prev);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const items = [
+    { id: 1, width: '60%', color: '#ff5f56', x: -40, y: -60, r: -15 }, // Red
+    { id: 2, width: '80%', color: '#ffbd2e', x: 50, y: -20, r: 10 },  // Yellow
+    { id: 3, width: '50%', color: '#27c93f', x: -30, y: 40, r: -5 },  // Green
+    { id: 4, width: '70%', color: '#00dbff', x: 40, y: 80, r: 20 },   // Blue
+  ];
+
+  const chips = [
+    { text: 'JSON', x: -160, y: -120, delay: 0 },
+    { text: 'PDF', x: 180, y: -90, delay: 1 },
+    { text: 'SQL', x: -170, y: 110, delay: 2 },
+    { text: '02:45', x: 160, y: 90, delay: 1.5 },
+    { text: 'v1.0.1', x: 0, y: -180, delay: 0.5 },
+  ];
+
+  return (
+    <div className="visual-stage-clean">
+      {/* Ambient Grid */}
+      <div className="visual-grid"></div>
+
+      {/* Floating Chips */}
+      {chips.map((chip, i) => (
+        <motion.div
+          key={i}
+          className="floating-chip"
+          initial={{ x: chip.x, y: chip.y, opacity: 0 }}
+          animate={{
+            opacity: 0.4,
+            y: [chip.y - 10, chip.y + 10, chip.y - 10],
+          }}
+          transition={{
+            opacity: { duration: 0.5, delay: chip.delay },
+            y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: chip.delay }
+          }}
+        >
+          {chip.text}
+        </motion.div>
+      ))}
+
+      {/* Main Blocks */}
+      {items.map((item, index) => (
+        <motion.div
+          key={item.id}
+          className="time-block"
+          initial={false}
+          animate={{
+            x: isAligned ? 0 : item.x,
+            y: isAligned ? index * 50 : item.y, // 50px vertical spacing when aligned
+            rotate: isAligned ? 0 : item.r,
+            opacity: isAligned ? 1 : 0.6,
+            backgroundColor: isAligned ? item.color : '#4a5a57', // Muted to Bright
+            width: isAligned ? '120px' : item.width, // Fixed width when aligned for neat stack
+            zIndex: 10
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 60,
+            damping: 12,
+            mass: 1.2
+          }}
+          style={{
+            height: '36px',
+            borderRadius: '8px',
+            position: 'absolute',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+          }}
+        />
+      ))}
+      <motion.div
+        className="alignment-label"
+        animate={{ opacity: isAligned ? 1 : 0, y: isAligned ? 230 : 240 }}
+        transition={{ duration: 0.5 }}
+      >
+        <span>Report Generated</span>
+      </motion.div>
+    </div>
+  );
+};
 
 const MissionSection = () => (
   <section className="section bg-forest text-cream">
@@ -182,36 +272,7 @@ const MissionSection = () => (
             </p>
           </div>
           <div className="mission-visual">
-            <div className="visual-stage">
-              {/* Top: Chaos */}
-              <div className="chaos-zone">
-                <div className="particle p1"></div>
-                <div className="particle p2"></div>
-                <div className="particle p3"></div>
-                <div className="particle p4"></div>
-              </div>
-
-              {/* Middle: The Tool */}
-              <div className="cli-filter">
-                <span className="cli-prompt">&gt;</span> tickr report
-              </div>
-
-              {/* Bottom: Order */}
-              <div className="order-zone">
-                <div className="sorted-item s1">
-                  <span className="dot text-forest-light"></span>
-                  <span className="line"></span>
-                </div>
-                <div className="sorted-item s2">
-                  <span className="dot text-forest-light"></span>
-                  <span className="line"></span>
-                </div>
-                <div className="sorted-item s3">
-                  <span className="dot text-forest-light"></span>
-                  <span className="line"></span>
-                </div>
-              </div>
-            </div>
+            <AlignmentVisual />
           </div>
         </div>
       </FadeInSection>
@@ -226,19 +287,28 @@ const FeaturesSection = () => (
         <h2 className="section-title">Features</h2>
         <div className="features">
           <FeatureCard
+            symbol=">_"
+            color="green"
             title="CLI-First Workflow"
             desc="Stay in your flow state. Track time, switch contexts, and check status without ever leaving your terminal."
-            delay={0.2}
           />
           <FeatureCard
+            symbol="$"
+            color="yellow"
             title="Instant Invoicing"
             desc="Generate professional PDF invoices with a single command. Support for USD ($) and INR (Rs.) currencies out of the box."
-            delay={0.4}
           />
           <FeatureCard
+            symbol="[]"
+            color="blue"
             title="Project Summaries"
             desc="Visualize your productivity with detailed project summaries and monthly breakdowns."
-            delay={0.6}
+          />
+          <FeatureCard
+            symbol="@"
+            color="red"
+            title={<>Email Reports <span className="new-badge">New</span></>}
+            desc="Automatically send professional time reports, summaries, and invoices to your clients via email."
           />
         </div>
       </FadeInSection>
@@ -315,6 +385,11 @@ const Docs = () => {
               <li className={activeId === 'pomo' ? 'active' : ''}><a href="#pomo">Pomodoro Mode</a></li>
               <li className={activeId === 'data' ? 'active' : ''}><a href="#data">Data & Storage</a></li>
               <li className={activeId === 'invoice' ? 'active' : ''}><a href="#invoice">Invoicing</a></li>
+              <li className={activeId === 'email' ? 'active' : ''}>
+                <a href="#email">
+                  Email Integration <span className="new-badge" style={{ fontSize: '0.6rem', padding: '0.1rem 0.4rem' }}>NEW</span>
+                </a>
+              </li>
               <li className={activeId === 'config' ? 'active' : ''}><a href="#config">Configuration</a></li>
             </ul>
           </nav>
@@ -393,6 +468,23 @@ const Docs = () => {
                   <tr><td><code>--since &lt;date&gt;</code></td><td>Start date (YYYY-MM-DD). Default: Start of month.</td></tr>
                 </tbody>
               </table>
+            </section>
+
+            <section id="email">
+              <h3>Email Integration <span className="new-badge">New</span></h3>
+              <p>Tickr can automatically email reports and invoices to you and your clients.</p>
+
+              <h4>1. Configure SMTP</h4>
+              <p>First, set up your email provider (e.g., Gmail App Password).</p>
+              <CodeBlock code="tickr config --host smtp.gmail.com --user you@gmail.com --pass your-app-password" />
+
+              <h4>2. Set Project Emails</h4>
+              <p>Link client email addresses to a specific project.</p>
+              <CodeBlock code="tickr project MyProject --user you@email.com --client client@company.com" />
+
+              <h4>3. Send Reports</h4>
+              <p>When generating reports or invoices, Tickr will ask to send them via email.</p>
+              <CodeBlock code="tickr report MyProject" />
             </section>
 
             <section id="config">
@@ -479,6 +571,14 @@ const Home = ({ copyToClipboard }) => {
                   </motion.svg>
                 )}
               </AnimatePresence>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              transition={{ delay: 1 }}
+              className="version-tag"
+            >
+              v1.0.1
             </motion.div>
           </header>
 
@@ -567,6 +667,22 @@ const Home = ({ copyToClipboard }) => {
 
 // --- Main App ---
 
+const AnnouncementBanner = () => (
+  <motion.div
+    initial={{ height: 0, opacity: 0 }}
+    animate={{ height: 'auto', opacity: 1 }}
+    transition={{ delay: 1, duration: 0.5 }}
+    className="announcement-banner"
+  >
+    <div className="container">
+      <span className="new-pill">NEW</span>
+      <span className="announcement-text">
+        <strong>v1.0.1 Released:</strong> Now with Email Reports & Invoices! 🚀
+      </span>
+    </div>
+  </motion.div>
+);
+
 function App() {
   const [view, setView] = useState('home'); // 'home' or 'docs'
 
@@ -576,6 +692,7 @@ function App() {
 
   return (
     <div className="app-root">
+      <AnnouncementBanner />
       {/* Navbar - Fixed/Absolute Positioning relative to first section */}
       <div className="bg-cream">
         <div className="container">

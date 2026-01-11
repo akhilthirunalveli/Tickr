@@ -3,7 +3,9 @@ import fs from 'fs';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
-import { getSessions } from '../db.js';
+import { getSessions, getProject } from '../db.js';
+import { sendEmail } from '../utils/email.js';
+import { askConfirmation } from '../utils/ui.js';
 import readline from 'readline';
 
 dayjs.extend(duration);
@@ -66,7 +68,8 @@ export const invoiceCommand = async (project, options) => {
 
         const doc = new PDFDocument();
         const filename = `Invoice_${project}_${dayjs().format('YYYYMMDD')}.pdf`;
-        doc.pipe(fs.createWriteStream(filename));
+        const writeStream = fs.createWriteStream(filename);
+        doc.pipe(writeStream);
 
 
         doc.fontSize(25).text('INVOICE', 50, doc.y);
@@ -102,7 +105,32 @@ export const invoiceCommand = async (project, options) => {
 
         doc.end();
 
+        await new Promise((resolve, reject) => {
+            writeStream.on('finish', resolve);
+            writeStream.on('error', reject);
+        });
+
         console.log(chalk.green(`Invoice saved to ${chalk.bold(filename)}`));
+
+        // Send Email
+        const projDetails = getProject(project);
+        if (projDetails && (projDetails.user_email || projDetails.client_email)) {
+            const recipients = [projDetails.user_email, projDetails.client_email].filter(Boolean);
+
+            if (recipients.length > 0) {
+                const shouldSend = await askConfirmation(`Send email to ${recipients.join(', ')}?`);
+                if (shouldSend) {
+                    await sendEmail(
+                        recipients.join(','),
+                        `Invoice: ${project}`,
+                        `Please find attached the invoice for project ${project}.\n\nPeriod: ${since.format('YYYY-MM-DD')} to ${until.format('YYYY-MM-DD')}\nAmount Due: ${currency.symbol}${amount.toFixed(2)}`,
+                        [{ filename, path: filename }]
+                    );
+                } else {
+                    console.log(chalk.gray('Email sending skipped.'));
+                }
+            }
+        }
 
     } catch (error) {
         console.error(chalk.red('Failed to generate invoice:'), error.message);

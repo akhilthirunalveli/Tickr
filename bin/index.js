@@ -9,6 +9,8 @@ import { pomoCommand } from '../src/commands/pomo.js';
 import { summaryCommand } from '../src/commands/summary.js';
 import { invoiceCommand } from '../src/commands/invoice.js';
 import { dashCommand } from '../src/commands/dash.js';
+import { configCommand } from '../src/commands/config.js';
+import { projectCommand } from '../src/commands/project.js';
 
 const program = new Command();
 
@@ -76,6 +78,25 @@ program.command('dash')
     .description('Open interactive dashboard')
     .action(() => {
         dashCommand();
+    });
+
+program.command('config')
+    .description('Configure global settings (SMTP)')
+    .option('--host <host>', 'SMTP Host')
+    .option('--port <port>', 'SMTP Port')
+    .option('--user <user>', 'SMTP User')
+    .option('--pass <pass>', 'SMTP Password')
+    .action((options) => {
+        configCommand(options);
+    });
+
+program.command('project')
+    .description('Manage project settings')
+    .argument('<name>', 'Project name')
+    .option('--user-email <email>', 'User Email')
+    .option('--client-email <email>', 'Client Email')
+    .action((name, options) => {
+        projectCommand(name, options);
     });
 
 program.parse();

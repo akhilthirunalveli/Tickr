@@ -3,11 +3,13 @@ import fs from 'fs';
 import chalk from 'chalk';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration.js';
-import { getSessions } from '../db.js';
+import { getSessions, getProject } from '../db.js';
+import { sendEmail } from '../utils/email.js';
+import { askConfirmation } from '../utils/ui.js';
 
 dayjs.extend(duration);
 
-export const summaryCommand = (project, options) => {
+export const summaryCommand = async (project, options) => {
     try {
         if (!project) {
             console.error(chalk.red('Error: Project is required.'));
@@ -37,7 +39,8 @@ export const summaryCommand = (project, options) => {
 
         const doc = new PDFDocument();
         const filename = `Summary_${project}_${dayjs().format('YYYYMMDD')}.pdf`;
-        doc.pipe(fs.createWriteStream(filename));
+        const writeStream = fs.createWriteStream(filename);
+        doc.pipe(writeStream);
 
 
         doc.fontSize(25).text('PROJECT SUMMARY', { align: 'center' });
@@ -87,7 +90,32 @@ export const summaryCommand = (project, options) => {
 
         doc.end();
 
+        await new Promise((resolve, reject) => {
+            writeStream.on('finish', resolve);
+            writeStream.on('error', reject);
+        });
+
         console.log(chalk.green(`Summary report saved to ${chalk.bold(filename)}`));
+
+        // Send Email
+        const projDetails = getProject(project);
+        if (projDetails && (projDetails.user_email || projDetails.client_email)) {
+            const recipients = [projDetails.user_email, projDetails.client_email].filter(Boolean);
+
+            if (recipients.length > 0) {
+                const shouldSend = await askConfirmation(`Send email to ${recipients.join(', ')}?`);
+                if (shouldSend) {
+                    await sendEmail(
+                        recipients.join(','),
+                        `Project Summary: ${project}`,
+                        `Please find attached the summary for project ${project}.\n\nPeriod: ${since.format('YYYY-MM-DD')} to ${until.format('YYYY-MM-DD')}\nTotal Hours: ${totalHours.toFixed(2)}`,
+                        [{ filename, path: filename }]
+                    );
+                } else {
+                    console.log(chalk.gray('Email sending skipped.'));
+                }
+            }
+        }
 
     } catch (error) {
         console.error(chalk.red('Failed to generate summary:'), error.message);

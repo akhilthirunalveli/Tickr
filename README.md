@@ -77,6 +77,29 @@ Generate a billable PDF invoice.
 tickr invoice <project> --rate 100       # $100/hr rate
 ```
 
+### Email Integration
+
+#### 1. Setup SMTP
+Configure your email provider to enable sending reports.
+```bash
+tickr config --host smtp.gmail.com --port 587 --user me@gmail.com --pass "app-password"
+```
+*Tip: Use App Passwords for Gmail/Outlook.*
+
+#### 2. Configure Project
+Link emails to a project for auto-sending.
+```bash
+tickr project <name> --user-email me@example.com --client-email client@co.com
+```
+
+#### 3. Send
+Reports, Summaries, and Invoices will automatically be emailed if configured.
+```bash
+tickr report <project>      # Emails text report
+tickr summary <project>     # Emails PDF summary
+tickr invoice <project>     # Emails invoice PDF
+```
+
 ## Data Storage
 Data is stored in `~/.tickr/tickr.db`.
 You can back up this file to save your history.
