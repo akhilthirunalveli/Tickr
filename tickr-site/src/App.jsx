@@ -12,7 +12,15 @@ const FadeIn = ({ children, delay = 0 }) => (
 
 const useCopy = (text) => {
   const [copied, setCopied] = useState(false);
-  const copy = () => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const copy = async () => { 
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text', err);
+    }
+  };
   return [copied, copy];
 };
 
@@ -248,10 +256,10 @@ const CTASection = () => {
           <div className="section-label">Get Started</div>
           <h2 className="section-title">Install in one line. Track forever.</h2>
           <p className="section-desc">Free, open-source, and runs everywhere Node.js does. Your data stays on your machine.</p>
-          <motion.div className="cta-install-block" onClick={copy}>
+          <motion.button type="button" className="cta-install-block" onClick={copy}>
             <span>$ npm install -g tickr-cli</span>
             <CopyIcon copied={copied} />
-          </motion.div>
+          </motion.button>
         </FadeIn>
       </div>
     </section>
@@ -326,10 +334,10 @@ const Home = () => {
                 Track projects, generate invoices, and bill clients — all from your command line. No GUI, no cloud, no distractions.
               </motion.p>
               <motion.div className="hero-actions" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                <div className="install-block" onClick={copy} title="Click to copy">
+                <button type="button" className="install-block" onClick={copy} title="Click to copy">
                   <span>$ npm install -g tickr-cli</span>
                   <CopyIcon copied={copied} />
-                </div>
+                </button>
                 <a href="https://github.com/akhilthirunalveli/Tickr" target="_blank" rel="noopener noreferrer" className="btn-secondary">
                   View on GitHub <ArrowIcon />
                 </a>
@@ -339,7 +347,7 @@ const Home = () => {
                 <span className="hero-meta-dot" />
                 <span className="hero-meta-item">🔒 100% local data</span>
                 <span className="hero-meta-dot" />
-                <span className="hero-meta-item">v1.0.1</span>
+                <span className="hero-meta-item">v1.1.0</span>
               </motion.div>
             </div>
             <motion.div className="hero-terminal-wrapper"

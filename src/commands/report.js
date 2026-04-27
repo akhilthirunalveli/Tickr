@@ -87,9 +87,14 @@ export const reportCommand = async (project, options) => {
             });
 
             sessionsWithNotes.forEach(s => {
-                const start = dayjs(s.start_time);
-                const end = s.end_time ? dayjs(s.end_time) : dayjs();
-                const dur = dayjs.duration(end.diff(start));
+                const sessionStart = dayjs(s.start_time);
+                const sessionEnd = s.end_time ? dayjs(s.end_time) : dayjs();
+                const effectiveStart = sessionStart.isBefore(since) ? since : sessionStart;
+                const effectiveEnd = sessionEnd.isAfter(until) ? until : sessionEnd;
+                
+                if (effectiveEnd.isBefore(effectiveStart)) return;
+
+                const dur = dayjs.duration(effectiveEnd.diff(effectiveStart));
                 const durStr = `${Math.floor(dur.asHours())}h ${dur.minutes()}m`;
                 const noteStr = s.notes ? s.notes.split('\n').join('; ').substring(0, 34) : '';
                 const tagStr = s.tags || '';

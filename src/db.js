@@ -52,10 +52,14 @@ db.exec(`
 // Migration: add notes/tags columns to existing databases
 try {
   db.exec(`ALTER TABLE sessions ADD COLUMN notes TEXT`);
-} catch (_) { /* column already exists */ }
+} catch (err) {
+  if (!err.message.includes('duplicate column name')) throw err;
+}
 try {
   db.exec(`ALTER TABLE sessions ADD COLUMN tags TEXT`);
-} catch (_) { /* column already exists */ }
+} catch (err) {
+  if (!err.message.includes('duplicate column name')) throw err;
+}
 
 /**
  * Start a new session for a project.
@@ -120,7 +124,10 @@ export const addNoteToActive = (note, tag) => {
 
   // Append note to existing notes (newline-separated)
   const existingNotes = session.notes || '';
-  const newNotes = existingNotes ? `${existingNotes}\n${note}` : note;
+  let newNotes = existingNotes;
+  if (note) {
+    newNotes = existingNotes ? `${existingNotes}\n${note}` : note;
+  }
 
   // Append tag to existing tags (comma-separated, deduplicated)
   let newTags = session.tags || '';

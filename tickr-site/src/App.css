@@ -525,6 +525,7 @@
 .bento-icon.amber { color: var(--accent-amber); background: rgba(228,152,59,0.1); }
 .bento-icon.indigo { color: var(--accent-indigo); background: rgba(91,95,232,0.1); }
 .bento-icon.rose { color: var(--accent-rose); background: rgba(212,86,122,0.1); }
+.bento-icon.blue { color: var(--accent-blue); background: rgba(59,130,246,0.1); }
 
 .bento-card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; color: var(--text-primary); }
 .bento-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65; }

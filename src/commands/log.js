@@ -10,7 +10,7 @@ export const logCommand = (note, options) => {
             return;
         }
 
-        if (!note) {
+        if (!note && !options.tag) {
             // Display current notes for the active session
             console.log(chalk.cyan(`Active: ${chalk.bold(session.project)}`));
 
@@ -31,15 +31,17 @@ export const logCommand = (note, options) => {
         }
 
         const tag = options.tag || null;
-        const updated = addNoteToActive(note, tag);
+        const updated = addNoteToActive(note || null, tag);
 
         if (!updated) {
             console.log(chalk.yellow('No active session found.'));
             return;
         }
 
-        console.log(chalk.green(`✓ Note added to ${chalk.bold(updated.project)}`));
-        console.log(chalk.gray(`  "${note}"`));
+        console.log(chalk.green(`✓ Update applied to ${chalk.bold(updated.project)}`));
+        if (note) {
+            console.log(chalk.gray(`  Note: "${note}"`));
+        }
 
         if (tag) {
             console.log(chalk.gray(`  Tag: `) + chalk.yellow(`[${tag}]`));
