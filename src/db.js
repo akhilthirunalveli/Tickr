@@ -119,38 +119,42 @@ export const getActiveSession = () => {
  * @param {string} [tag] - Optional tag
  */
 export const addNoteToActive = (note, tag) => {
-  const session = getActiveSession();
-  if (!session) return null;
-
   const trimmedNote = note ? note.trim() : null;
   const trimmedTag = tag ? tag.trim() : null;
 
   if (!trimmedNote && !trimmedTag) {
-    return session;
+    return getActiveSession();
   }
 
-  // Append note to existing notes (newline-separated)
-  const existingNotes = session.notes || '';
-  let newNotes = existingNotes;
-  if (trimmedNote) {
-    newNotes = existingNotes ? `${existingNotes}\n${trimmedNote}` : trimmedNote;
-  }
+  const updateTx = db.transaction(() => {
+    const session = db.prepare(`SELECT * FROM sessions WHERE end_time IS NULL`).get();
+    if (!session) return null;
 
-  // Append tag to existing tags (comma-separated, deduplicated)
-  let newTags = session.tags || '';
-  if (trimmedTag) {
-    const existing = newTags ? newTags.split(',').map(t => t.trim()) : [];
-    if (!existing.includes(trimmedTag)) {
-      existing.push(trimmedTag);
+    // Append note to existing notes (newline-separated)
+    const existingNotes = session.notes || '';
+    let newNotes = existingNotes;
+    if (trimmedNote) {
+      newNotes = existingNotes ? `${existingNotes}\n${trimmedNote}` : trimmedNote;
     }
-    newTags = existing.join(', ');
-  }
 
-  db.prepare(`
-    UPDATE sessions SET notes = ?, tags = ? WHERE id = ?
-  `).run(newNotes, newTags, session.id);
+    // Append tag to existing tags (comma-separated, deduplicated)
+    let newTags = session.tags || '';
+    if (trimmedTag) {
+      const existing = newTags ? newTags.split(',').map(t => t.trim()) : [];
+      if (!existing.includes(trimmedTag)) {
+        existing.push(trimmedTag);
+      }
+      newTags = existing.join(', ');
+    }
 
-  return { ...session, notes: newNotes, tags: newTags };
+    db.prepare(`
+      UPDATE sessions SET notes = ?, tags = ? WHERE id = ?
+    `).run(newNotes, newTags, session.id);
+
+    return { ...session, notes: newNotes, tags: newTags };
+  });
+
+  return updateTx();
 };
 
 /**
