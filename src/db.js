@@ -122,19 +122,26 @@ export const addNoteToActive = (note, tag) => {
   const session = getActiveSession();
   if (!session) return null;
 
+  const trimmedNote = note ? note.trim() : null;
+  const trimmedTag = tag ? tag.trim() : null;
+
+  if (!trimmedNote && !trimmedTag) {
+    return session;
+  }
+
   // Append note to existing notes (newline-separated)
   const existingNotes = session.notes || '';
   let newNotes = existingNotes;
-  if (note) {
-    newNotes = existingNotes ? `${existingNotes}\n${note}` : note;
+  if (trimmedNote) {
+    newNotes = existingNotes ? `${existingNotes}\n${trimmedNote}` : trimmedNote;
   }
 
   // Append tag to existing tags (comma-separated, deduplicated)
   let newTags = session.tags || '';
-  if (tag) {
+  if (trimmedTag) {
     const existing = newTags ? newTags.split(',').map(t => t.trim()) : [];
-    if (!existing.includes(tag.trim())) {
-      existing.push(tag.trim());
+    if (!existing.includes(trimmedTag)) {
+      existing.push(trimmedTag);
     }
     newTags = existing.join(', ');
   }
