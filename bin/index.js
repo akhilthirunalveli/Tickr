@@ -11,6 +11,7 @@ import { invoiceCommand } from '../src/commands/invoice.js';
 import { dashCommand } from '../src/commands/dash.js';
 import { configCommand } from '../src/commands/config.js';
 import { projectCommand } from '../src/commands/project.js';
+import { logCommand } from '../src/commands/log.js';
 
 const program = new Command();
 
@@ -97,6 +98,14 @@ program.command('project')
     .option('--client-email <email>', 'Client Email')
     .action((name, options) => {
         projectCommand(name, options);
+    });
+
+program.command('log')
+    .description('Add a note or tag to the active session')
+    .argument('[note]', 'Note text to add')
+    .option('--tag <tag>', 'Tag for categorization (e.g. bugfix, meeting, feature)')
+    .action((note, options) => {
+        logCommand(note, options);
     });
 
 program.parse();

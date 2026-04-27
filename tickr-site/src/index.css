@@ -1,24 +1,68 @@
 :root {
-  --bg-cream: #F2F0E9;
-  --text-forest: #1B3B36;
-  --text-forest-light: #2C5F56;
-  --card-surface: #E8E6DF;
-  --font-serif: 'Playfair Display', serif;
-  --font-sans: 'Inter', sans-serif;
+  /* Light & lively palette */
+  --bg-page: #F8F6F1;
+  --bg-warm: #F0EDE5;
+  --bg-white: #FFFFFF;
+  --bg-tinted: #FFF8F0;
+
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a5a;
+  --text-muted: #91968a;
+
+  --accent-coral: #101313;
+  --accent-teal: #1DA088;
+  --accent-amber: #E4983B;
+  --accent-indigo: #5B5FE8;
+  --accent-rose: #D4567A;
+  --accent-blue: #3B82F6;
+
+  --terminal-bg: #1e1e2e;
+  --terminal-border: #313244;
+  --terminal-cyan: #89dceb;
+  --terminal-green: #a6e3a1;
+  --terminal-yellow: #f9e2af;
+  --terminal-red: #f38ba8;
+  --terminal-blue: #89b4fa;
+  --terminal-white: #cdd6f4;
+  --terminal-surface: #181825;
+
+  --border-light: rgba(26, 26, 46, 0.08);
+  --border-medium: rgba(26, 26, 46, 0.14);
+
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --font-display: 'Space Grotesk', -apple-system, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-terminal: none;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background-color: var(--bg-cream);
-  color: var(--text-forest);
-  font-family: var(--font-sans);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-display);
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 h1,
@@ -27,12 +71,31 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-serif);
-  font-weight: 600;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
+
+::selection {
+  background: var(--accent-coral);
+  color: #fff;
 }

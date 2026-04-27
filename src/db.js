@@ -29,7 +29,9 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     project TEXT NOT NULL,
     start_time TEXT NOT NULL,
-    end_time TEXT
+    end_time TEXT,
+    notes TEXT,
+    tags TEXT
   );
   
   CREATE INDEX IF NOT EXISTS idx_project ON sessions(project);
@@ -46,6 +48,18 @@ db.exec(`
     value TEXT
   );
 `);
+
+// Migration: add notes/tags columns to existing databases
+try {
+  db.exec(`ALTER TABLE sessions ADD COLUMN notes TEXT`);
+} catch (err) {
+  if (!err.message.includes('duplicate column name')) throw err;
+}
+try {
+  db.exec(`ALTER TABLE sessions ADD COLUMN tags TEXT`);
+} catch (err) {
+  if (!err.message.includes('duplicate column name')) throw err;
+}
 
 /**
  * Start a new session for a project.
@@ -97,6 +111,50 @@ export const getActiveSession = () => {
   return db.prepare(`
     SELECT * FROM sessions WHERE end_time IS NULL
   `).get();
+};
+
+/**
+ * Add a note to the currently active session.
+ * @param {string} note - The note text
+ * @param {string} [tag] - Optional tag
+ */
+export const addNoteToActive = (note, tag) => {
+  const trimmedNote = note ? note.trim() : null;
+  const trimmedTag = tag ? tag.trim() : null;
+
+  if (!trimmedNote && !trimmedTag) {
+    return getActiveSession();
+  }
+
+  const updateTx = db.transaction(() => {
+    const session = db.prepare(`SELECT * FROM sessions WHERE end_time IS NULL`).get();
+    if (!session) return null;
+
+    // Append note to existing notes (newline-separated)
+    const existingNotes = session.notes || '';
+    let newNotes = existingNotes;
+    if (trimmedNote) {
+      newNotes = existingNotes ? `${existingNotes}\n${trimmedNote}` : trimmedNote;
+    }
+
+    // Append tag to existing tags (comma-separated, deduplicated)
+    let newTags = session.tags || '';
+    if (trimmedTag) {
+      const existing = newTags ? newTags.split(',').map(t => t.trim()) : [];
+      if (!existing.includes(trimmedTag)) {
+        existing.push(trimmedTag);
+      }
+      newTags = existing.join(', ');
+    }
+
+    db.prepare(`
+      UPDATE sessions SET notes = ?, tags = ? WHERE id = ?
+    `).run(newNotes, newTags, session.id);
+
+    return { ...session, notes: newNotes, tags: newTags };
+  });
+
+  return updateTx();
 };
 
 /**
