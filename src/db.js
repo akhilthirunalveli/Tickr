@@ -29,7 +29,9 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     project TEXT NOT NULL,
     start_time TEXT NOT NULL,
-    end_time TEXT
+    end_time TEXT,
+    notes TEXT,
+    tags TEXT
   );
   
   CREATE INDEX IF NOT EXISTS idx_project ON sessions(project);
@@ -46,6 +48,14 @@ db.exec(`
     value TEXT
   );
 `);
+
+// Migration: add notes/tags columns to existing databases
+try {
+  db.exec(`ALTER TABLE sessions ADD COLUMN notes TEXT`);
+} catch (_) { /* column already exists */ }
+try {
+  db.exec(`ALTER TABLE sessions ADD COLUMN tags TEXT`);
+} catch (_) { /* column already exists */ }
 
 /**
  * Start a new session for a project.
@@ -97,6 +107,36 @@ export const getActiveSession = () => {
   return db.prepare(`
     SELECT * FROM sessions WHERE end_time IS NULL
   `).get();
+};
+
+/**
+ * Add a note to the currently active session.
+ * @param {string} note - The note text
+ * @param {string} [tag] - Optional tag
+ */
+export const addNoteToActive = (note, tag) => {
+  const session = getActiveSession();
+  if (!session) return null;
+
+  // Append note to existing notes (newline-separated)
+  const existingNotes = session.notes || '';
+  const newNotes = existingNotes ? `${existingNotes}\n${note}` : note;
+
+  // Append tag to existing tags (comma-separated, deduplicated)
+  let newTags = session.tags || '';
+  if (tag) {
+    const existing = newTags ? newTags.split(',').map(t => t.trim()) : [];
+    if (!existing.includes(tag.trim())) {
+      existing.push(tag.trim());
+    }
+    newTags = existing.join(', ');
+  }
+
+  db.prepare(`
+    UPDATE sessions SET notes = ?, tags = ? WHERE id = ?
+  `).run(newNotes, newTags, session.id);
+
+  return { ...session, notes: newNotes, tags: newTags };
 };
 
 /**

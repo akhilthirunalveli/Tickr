@@ -76,6 +76,36 @@ export const reportCommand = async (project, options) => {
         const tableString = table.toString();
         console.log(tableString);
 
+        // Show detailed session breakdown with notes
+        const sessionsWithNotes = sessions.filter(s => s.notes || s.tags);
+        if (sessionsWithNotes.length > 0) {
+            console.log(chalk.cyan('\n  Session Details:'));
+
+            const detailTable = new Table({
+                head: [chalk.cyan('Project'), chalk.cyan('Date'), chalk.cyan('Duration'), chalk.cyan('Notes'), chalk.cyan('Tags')],
+                colWidths: [18, 14, 12, 36, 16]
+            });
+
+            sessionsWithNotes.forEach(s => {
+                const start = dayjs(s.start_time);
+                const end = s.end_time ? dayjs(s.end_time) : dayjs();
+                const dur = dayjs.duration(end.diff(start));
+                const durStr = `${Math.floor(dur.asHours())}h ${dur.minutes()}m`;
+                const noteStr = s.notes ? s.notes.split('\n').join('; ').substring(0, 34) : '';
+                const tagStr = s.tags || '';
+
+                detailTable.push([
+                    s.project,
+                    start.format('MM-DD HH:mm'),
+                    durStr,
+                    noteStr,
+                    tagStr ? chalk.yellow(`[${tagStr}]`) : ''
+                ]);
+            });
+
+            console.log(detailTable.toString());
+        }
+
         // Send Email if project is specified
         if (project) {
             const projDetails = getProject(project);

@@ -67,16 +67,22 @@ export const dashCommand = () => {
             const diff = dayjs.duration(now.diff(start));
             const timeStr = `${Math.floor(diff.asHours())}h ${diff.minutes()}m ${diff.seconds()}s`;
 
-            activeBox.setContent(`{center}
-{bold}${session.project}{/bold}
+            let content = `{center}\n{bold}${session.project}{/bold}\n\n{green-fg}${timeStr}{/green-fg}`;
 
-{green-fg}${timeStr}{/green-fg}
-{/center}`);
+            if (session.notes) {
+                const lastNote = session.notes.split('\n').pop();
+                const truncated = lastNote.length > 30 ? lastNote.substring(0, 27) + '...' : lastNote;
+                content += `\n{gray-fg}${truncated}{/gray-fg}`;
+            }
+
+            if (session.tags) {
+                content += `\n{yellow-fg}[${session.tags}]{/yellow-fg}`;
+            }
+
+            content += `\n{/center}`;
+            activeBox.setContent(content);
         } else {
-            activeBox.setContent(`{center}
-No active session.
-Run {bold}tickr start <project>{/bold}
-{/center}`);
+            activeBox.setContent(`{center}\nNo active session.\nRun {bold}tickr start <project>{/bold}\n{/center}`);
         }
 
 

@@ -82,26 +82,60 @@ export const invoiceCommand = async (project, options) => {
 
 
         const headerY = doc.y;
-        doc.fontSize(14).text('Description', 50, headerY, { width: 300 });
-        doc.text('Hours', 350, headerY);
-        doc.text('Rate', 420, headerY);
-        doc.text('Total', 490, headerY);
+        doc.fontSize(10).font('Helvetica-Bold');
+        doc.text('Description', 50, headerY, { width: 260 });
+        doc.text('Hours', 320, headerY);
+        doc.text('Rate', 390, headerY);
+        doc.text('Amount', 460, headerY);
+
+        doc.moveDown(0.5);
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke('#cccccc');
+        doc.moveDown(0.5);
+
+        doc.font('Helvetica').fontSize(10);
+
+        // Generate itemized line items from sessions with notes
+        let itemCount = 0;
+        sessions.forEach(s => {
+            const start = dayjs(s.start_time);
+            const end = s.end_time ? dayjs(s.end_time) : dayjs();
+
+            const effStart = start.isBefore(since) ? since : start;
+            const effEnd = end.isAfter(until) ? until : end;
+            if (!effStart.isBefore(effEnd)) return;
+
+            const sessionMs = effEnd.diff(effStart);
+            const sessionHours = sessionMs / (1000 * 60 * 60);
+            const sessionAmount = sessionHours * rate;
+
+            // Build description from notes/tags
+            let description = s.notes ? s.notes.split('\n')[0] : `Work session — ${start.format('MMM DD')}`;
+            if (description.length > 45) description = description.substring(0, 42) + '...';
+            if (s.tags) description += ` [${s.tags}]`;
+
+            const rowY = doc.y;
+            doc.text(description, 50, rowY, { width: 260 });
+            doc.text(sessionHours.toFixed(2), 320, rowY);
+            doc.text(`${currency.symbol}${rate}`, 390, rowY);
+            doc.text(`${currency.symbol}${sessionAmount.toFixed(2)}`, 460, rowY);
+            doc.moveDown(0.8);
+            itemCount++;
+        });
+
+        if (itemCount === 0) {
+            const rowY = doc.y;
+            doc.text(`Development Services - ${project}`, 50, rowY, { width: 260 });
+            doc.text(totalHours.toFixed(2), 320, rowY);
+            doc.text(`${currency.symbol}${rate}`, 390, rowY);
+            doc.text(`${currency.symbol}${amount.toFixed(2)}`, 460, rowY);
+            doc.moveDown();
+        }
 
         doc.moveDown();
-        doc.underline(50, doc.y, 500, 2);
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke('#cccccc');
         doc.moveDown();
 
-        const rowY = doc.y;
-        doc.fontSize(12).text(`Development Services - ${project}`, 50, rowY, { width: 300 });
-        doc.text(totalHours.toFixed(4), 350, rowY);
-        doc.text(totalHours.toFixed(4), 350, rowY);
-        doc.text(`${currency.symbol}${rate}`, 420, rowY);
-        doc.text(`${currency.symbol}${amount.toFixed(2)}`, 490, rowY);
-
-        doc.moveDown();
-        doc.moveDown();
-
-        doc.fontSize(16).text(`Total Due: ${currency.symbol}${amount.toFixed(2)}`, 50, doc.y, { align: 'left' });
+        doc.fontSize(14).font('Helvetica-Bold').text(`Total Due: ${currency.symbol}${amount.toFixed(2)}`, 50, doc.y, { align: 'left' });
 
         doc.end();
 
